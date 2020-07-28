@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Produk;
 
 class ProdukController extends Controller
-{
+{   
+    // INPUT PRODUK BARU
     public function create(Request $request){
         try {
             $validator = Validator::make($request->all(), [
@@ -41,6 +42,7 @@ class ProdukController extends Controller
         }
     }
 
+    // MENGUPDATE PRODUK
     public function update(Request $request, $id){
         try {
             $validator = Validator::make($request->all(), [
@@ -76,51 +78,7 @@ class ProdukController extends Controller
         }
     }
 
-    // public function tambahBeratProdukKg(Request $request, $id){
-    //     try {
-    //         $validator = Validator::make($request->all(), [
-    //             'berat_tambah'	=> 'required|integer',
-    //             'satuan_berat'	=> 'required|string',
-    //         ]);
-
-    //         if($validator->fails()){
-    //             return response()->json([
-    //                 'status'	=> '0',
-    //                 'message'	=> $validator->errors()
-    //             ]);
-    //         }
-            
-    //         $data = Produk::where('id', $id)->first();
-    //         if ($request->input('satuan_berat') == $data->satuan_berat) {
-    //             $data->berat_produk += $request->input('berat_tambah');
-    //         } elseif ($request->input('satuan_berat') == 'kg') {
-    //             $data->berat_produk += $request->input('berat_tambah');
-    //         } elseif ($request->input('satuan_berat') == 'ons') {
-    //             $data->berat_produk += $request->input('berat_tambah')/10;
-    //         } elseif ($request->input('satuan_berat') == 'g') {
-    //             $data->berat_produk += $request->input('berat_tambah')/1000;
-    //         } elseif ($request->input('satuan_berat') == 'mg') {
-    //             $data->berat_produk += $request->input('berat_tambah')/1000000;
-    //         } else {
-    //             return response()->json([
-    //                 'message' => 'Maaf, data konversi belum tersedia.'
-    //             ]);
-    //         }
-    //         $data->save();
-
-    //         return response()->json([
-    //             'status'	=> '1',
-    //             'message'	=> 'Berat Produk ' . $data->nama_produk . ' Berhasil Ditambahkan!'
-    //         ]);
-
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => '0',
-    //             'message'	=> $e->getMessage()
-    //         ]);
-    //     }
-    // }
-
+    // MENAMBAH BERAT PRODUK
     public function tambahBeratProduk(Request $request, $id){
         try {
             $validator = Validator::make($request->all(), [
@@ -135,15 +93,6 @@ class ProdukController extends Controller
             }
 
             $data = Produk::where('id', $id)->first();
-
-            // $data->berat_produk += $request->input('berat_tambah'); --BERHASIL--
-
-            // Implementasi AI
-
-            // $data->berat_produk += $request->input('berat_tambah')  as BERAT_TAMBAH
-            // $request->input('satuan_berat')  as SATUAN_BERAT
-            
-            // $data->satuan_berat              as SATUAN_DATABASE
 
             if ($request->input('satuan_berat') == $data->satuan_berat) {
                 $data->berat_produk += $request->input('berat_tambah');
@@ -201,25 +150,6 @@ class ProdukController extends Controller
                 ]);
             }
             
-
-            // ORIGINAL
-            // if ($request->input('satuan_berat') == $data->satuan_berat) {
-            //     $data->berat_produk += $request->input('berat_tambah');
-            // } elseif ($request->input('satuan_berat') == 'kg') {
-            //     $data->berat_produk += $request->input('berat_tambah');
-            // } elseif ($request->input('satuan_berat') == 'ons') {
-            //     $data->berat_produk += $request->input('berat_tambah')/10;
-            // } elseif ($request->input('satuan_berat') == 'g') {
-            //     $data->berat_produk += $request->input('berat_tambah')/1000;
-            // } elseif ($request->input('satuan_berat') == 'mg') {
-            //     $data->berat_produk += $request->input('berat_tambah')/1000000;
-            //     // return $data->berat_produk;
-            // } else {
-            //     return response()->json([
-            //         'message' => 'Maaf, data konversi belum tersedia.'
-            //     ]);
-            // }
-
             $data->save();
 
             return response()->json([
@@ -235,44 +165,93 @@ class ProdukController extends Controller
         }               
     }
 
-    // public function getAll(){
-    //     try{
-	//         $data["count"] = Produk::count();
-	//         $produk = array();
+    // MENGURANGI BERAT PRODUK
+    public function kurangBeratProduk(Request $request, $id){
+        try {
+            $validator = Validator::make($request->all(), [
+                'berat_kurang'	=> 'required|integer',
+                'satuan_berat'	=> 'required|string',
+            ]);
+            if($validator->fails()){
+                return response()->json([
+                    'status'	=> '0',
+                    'message'	=> $validator->errors()
+                ]);
+            }
 
-	//         foreach (Produk::all() as $p) {
-	//             $item = [
-	//                 "id"             => $p->id,
-	//                 "nama_produk"    => $p->nama_produk,
-	//                 "berat_produk"   => $p->berat_produk,
-	//                 "satuan_berat"   => $p->satuan_berat,
-	//                 // "created_at"  => $p->created_at,
-	//                 // "updated_at"  => $p->updated_at
-	//             ];
+            $data = Produk::where('id', $id)->first();
+            if ($request->input('satuan_berat') == $data->satuan_berat) {
+                $data->berat_produk -= $request->input('berat_kurang');
+            } elseif ($data->satuan_berat == 'kg') {
+                if ($request->input('satuan_berat') == 'ons') {
+                    $data->berat_produk -= $request->input('berat_kurang') / 10;
+                } elseif ($request->input('satuan_berat') == 'gram'){
+                    $data->berat_produk -= $request->input('berat_kurang') / 1000;
+                } elseif ($request->input('satuan_berat') == 'mg'){
+                    $data->berat_produk -= $request->input('berat_kurang') / 1000000;
+                } else {
+                    return response()->json([
+                        'message' => 'Maaf, data konversi belum tersedia.'
+                    ]);
+                }
+            } elseif ($data->satuan_berat == 'ons') {
+                if ($request->input('satuan_berat') == 'kg') {
+                    $data->berat_produk -= $request->input('berat_kurang') * 10;
+                } elseif ($request->input('satuan_berat') == 'gram'){
+                    $data->berat_produk -= $request->input('berat_kurang') / 100;
+                } elseif ($request->input('satuan_berat') == 'mg'){
+                    $data->berat_produk -= $request->input('berat_kurang') / 100000;
+                } else {
+                    return response()->json([
+                        'message' => 'Maaf, data konversi belum tersedia.'
+                    ]);
+                }
+            } elseif ($data->satuan_berat == 'gram') {
+                if ($request->input('satuan_berat') == 'kg') {
+                    $data->berat_produk -= $request->input('berat_kurang') * 1000;
+                } elseif ($request->input('satuan_berat') == 'ons'){
+                    $data->berat_produk -= $request->input('berat_kurang') * 100;
+                } elseif ($request->input('satuan_berat') == 'mg'){
+                    $data->berat_produk -= $request->input('berat_kurang') / 1000;
+                } else {
+                    return response()->json([
+                        'message' => 'Maaf, data konversi belum tersedia.'
+                    ]);
+                }
+            } elseif ($data->satuan_berat == 'mg') {
+                if ($request->input('satuan_berat') == 'kg') {
+                    $data->berat_produk -= $request->input('berat_kurang') * 1000000;
+                } elseif ($request->input('satuan_berat') == 'ons'){
+                    $data->berat_produk -= $request->input('berat_kurang') * 100000;
+                } elseif ($request->input('satuan_berat') == 'gram'){
+                    $data->berat_produk -= $request->input('berat_kurang') * 1000;
+                } else {
+                    return response()->json([
+                        'message' => 'Maaf, data konversi belum tersedia.'
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Maaf, data konversi belum tersedia.'
+                ]);
+            }
 
-	//             array_push($produk, $item);
-	//         }
-	//         $data["produk"] = $produk;
-	//         $data["status"] = 1;
-    //         return response($data);
+            $data->save();
 
-    //     } catch(\Exception $e){
-	// 		return response()->json([
-	// 		  'status' => '0',
-	// 		  'message' => $e->getMessage()
-	// 		]);
-    //   	}
+            return response()->json([
+                'status'	=> '1',
+                'message'	=> 'Berat Produk ' . $data->nama_produk . ' Berhasil Dikurangi!'
+            ]);
 
-        // MY VER
-        // $data = Produk::all();
-        // return response($data);
-    // }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => '0',
+                'message'	=> $e->getMessage()
+            ]);
+        }
+    }
 
-    // public function getProduk($id){
-    //     $data = Produk::where('id', $id)->get();
-    //     return response($data);
-    // }
-
+    // MENGHAPUS PRODUK
     public function destroy($id){
         try{
             $delete = Produk::where("id", $id)->delete();
@@ -296,7 +275,7 @@ class ProdukController extends Controller
         }
     }
 
-    // api_poin_v2
+    //MENAMPILKAN SEMUA PRODUK
     public function index()
     {
     	try{
@@ -327,6 +306,7 @@ class ProdukController extends Controller
       	}
     }
 
+    //MENAMPILKAN PRODUK TERTENTU
     public function getAll($limit = 10, $offset = 0)
     {
     	try{
