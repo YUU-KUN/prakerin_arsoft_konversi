@@ -22,10 +22,15 @@ Route::post('createProduk', 'ProdukController@create');                 //Tambah
 Route::put('updateProduk/{id}', 'ProdukController@update');             //Update Produk
 Route::put('tambahBerat/{id}', 'ProdukController@tambahBeratProduk');   //Tambah Berat Produk
 Route::put('kurangBerat/{id}', 'ProdukController@kurangBeratProduk');   //Kurangi Berat Produk
-Route::get('getProduk', "ProdukController@index");                      //Read Produk
-Route::get('getProduk/{limit}/{offset}', "ProdukController@getAll");    //Read PRoduk
 Route::delete('hapusProduk/{id}', 'ProdukController@destroy');          //Hapus Produk Tertentu
+Route::post('cariProduk/{limit}/{offset}', 'ProdukController@cariProduk');               //Cari Produk 
+// Route::post('poin_siswa/{limit}/{offset}', 'ProdukController@findPoinSiswa'); //CARI PRODUK V2
 
 
-// Route::get('getProduk/', 'ProdukController@getAll'); //Tampilkan Semua Produk v1
-// Route::get('getProduk/{id}', 'ProdukController@getProduk'); //Cari Produk Tertentu v1
+// Route::get('getProduk', "ProdukController@index");                      //Read Produk
+// Route::get('getProduk/{limit}/{offset}', "ProdukController@getAll");    //Read PRoduk
+
+
+Route::get('getProduk/', 'ProdukController@getAll'); //Tampilkan Semua Produk v1
+Route::get('getProduk/{id}', 'ProdukController@getProduk'); //Tampilkan Produk Tertentu v1
+

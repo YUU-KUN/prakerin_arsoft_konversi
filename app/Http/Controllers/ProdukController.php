@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Produk;
+use DB;
 
 class ProdukController extends Controller
 {   
@@ -306,7 +307,7 @@ class ProdukController extends Controller
       	}
     }
 
-    //MENAMPILKAN PRODUK TERTENTU
+    // MENAMPILKAN PRODUK TERTENTU
     public function getAll($limit = 10, $offset = 0)
     {
     	try{
@@ -336,4 +337,67 @@ class ProdukController extends Controller
 			]);
       	}
     }
+
+    public function cariProduk(Request $request, $limit = 10, $offset = 0)
+    {
+        $find = $request->find;
+        $dataProduk = DB::table('produks')->select('id', 
+                                               			'nama_produk',
+                                               			'berat_produk',
+                                               			'satuan_berat')
+                                               ->where('nama_produk', 'like', "%$find%");
+                                            //    ->groupBy('id');
+
+        $data["count"] = $dataProduk->get()->count();
+        $produk = array();
+
+        foreach ($dataProduk->get() as $p) {
+            $item = [
+                "id"          		=> $p->id,
+                "nama_produk"  		=> $p->nama_produk,
+                "berat_produk"  			=> $p->berat_produk,
+                "satuan_berat"    	  		=> $p->satuan_berat,
+            ];
+
+            array_push($produk, $item);
+        }
+        $data["produk"] = $produk;
+        $data["status"] = 1;
+        return response($data);
+    }
+
+    // public function cariProduk(Request $request, $limit = 10, $offset = 0){
+    //     $find = $request->find;
+    //     $dataProduk = DB::table('produks')->select('id','nama_produk','berat_produk','satuan_berat')
+    //                                         ->where('nama_produk', 'like', "%$find%");
+    //                                         // ->groupBy('id','nama_produk','berat_produk','satuan_berat');
+                                            
+    //     $data["count"] = $dataProduk->get()->count();
+    //     $produk = array();
+
+    //     foreach ($dataProduk->get() as $p) {
+    //         $item = [
+    //             "id"          		=> $p->id,
+    //             "nama_produk"  		=> $p->nama_produk,
+    //             "berat_produk"  	=> $p->berat_produk,
+    //             "satuan_berat"    	=> $p->satuan_berat,
+    //         ];
+
+    //         array_push($produk, $item);
+        
+    //     $data["produk"] = $produk;
+    //     $data["status"] = 1;
+    //     return response($data);
+    // }
+
+    // MY VER
+    // public function getAll(){
+    //     $data = Produk::all();
+    //     return response($data);
+    // }
+
+    // public function getProduk($id){
+    //     $data = Produk::where('id', $id)->get();
+    //     return response($data);
+    // }
 }
